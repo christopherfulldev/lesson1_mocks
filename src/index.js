@@ -10,10 +10,10 @@ const DEFAULT_OPTION = {
 class File {
     static async csvToJson(filePath) {
         const returnedContent = await File.getFileContent(filePath);
-        const validation = File.isValid(returnedContent)
+        const validation = await File.isValid(returnedContent);
         if(!validation.valid) throw new Error(validation.error);
        
-        const users = File.parseCSVToJSON(content);
+        const users = await File.parseCSVToJSON(returnedContent);
         return users;
     };
 
@@ -23,8 +23,7 @@ class File {
 
     static async isValid(csvString, options = DEFAULT_OPTION) {
         const [header, ...fileWhitoutHeader] = csvString.split("\n");
-        const isHeaderValid = header  === options.fields.join(",");
-       
+        const isHeaderValid = header === options.fields.join(",");
         if(!isHeaderValid) {
             return {
                 error: error.FILE_FILDS_ERROR_MESSAGE,
@@ -36,7 +35,7 @@ class File {
             fileWhitoutHeader.length > 0 &&
             fileWhitoutHeader.length <= options.maxLines
         )
-       
+        
         if(!isContentLengthAccepted) {
             return {
                 error: error.FILE_LENGTH_ERROR_MESSAGE,
@@ -60,6 +59,7 @@ class File {
 
             return new User(user);
         })
+        return users
     };
 };
 
